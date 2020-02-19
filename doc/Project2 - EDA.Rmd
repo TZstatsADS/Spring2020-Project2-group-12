@@ -15,13 +15,12 @@ library(ggplot2)
 library(ggmap)
 library(devtools)
 library(choroplethrZip)
-
 ```
 
 
 ```{r, echo = FALSE}
 # Load data
-df <- read.csv('./data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv')
+df <- read.csv('.../data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv')
 ```
 
 ```{r, echo = FALSE}
@@ -33,7 +32,7 @@ df.clean <- df %>%
   mutate(region = as.character(zipcode)) %>%
   filter(region > 0 & region != 'N/A')
 
-
+save(df.clean, file=".../output/LowName.RData")
 ```
 
 ## EDA
