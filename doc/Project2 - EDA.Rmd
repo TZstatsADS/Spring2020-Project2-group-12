@@ -99,7 +99,7 @@ ggplot(grade, aes(grade, cuisine, fill = frac)) +
 
 ```
 
-From the heatmap, it is not obvious to show the performance of each type of restaurants on the inspection grade. Spanish, Latin, and Caribbean restaurants have less A grade comparing to other restaurants. 
+From the heatmap, it is not obvious to show the performance of each type of restaurants on the inspection grade. Latin, and Caribbean restaurants have less A grade comparing to other restaurants. 
 
 
 ### Location
