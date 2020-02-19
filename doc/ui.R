@@ -1,0 +1,14 @@
+shinyUI(
+  fluidPage(
+    sidebarPanel(
+      selectInput("n_breaks", label = "Number of bins:",
+                  choices = c(10, 20, 35, 50), selected = 20),
+      
+      sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+                  min = 0.2, max = 2, value = 1, step = 0.2)
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  ))
+
