@@ -1,0 +1,21 @@
+---
+title: "Clean Restaurant Inspection Data"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(tidyr)
+### Read and select data
+data <- read.csv("~/Documents/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
+data_1920 <- data %>% mutate(format_inspection_date = mdy(INSPECTION.DATE))%>% 
+  mutate(inspection_year = year(format_inspection_date)) %>%
+  filter(inspection_year == 2019 | inspection_year == 2020)
+data_1920 <- na.omit(data_1920)
+colnames(data_1920)
+
+```
+
+
+
