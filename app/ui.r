@@ -1,42 +1,72 @@
 library(shiny)
 library(leaflet)
+library(dplyr)
+library(DT)
+library(leaflet.extras)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
-  
-  # Application title
-  titlePanel("2009 Manhattan Housing Sales"),
-  
-  # Sidebar with a selector input for neighborhood
-  sidebarLayout(
-    sidebarPanel(
-      selectInput("nbhd", label = h5("Choose a Manhattan Neighborhood"), 
-                         choices = list("all neighborhoods"=0,
-                                        "Central Harlem"=1, 
-                                        "Chelsea and Clinton"=2,
-                                        "East Harlem"=3, 
-                                        "Gramercy Park and Murray Hill"=4,
-                                        "Greenwich Village and Soho"=5, 
-                                        "Lower Manhattan"=6,
-                                        "Lower East Side"=7, 
-                                        "Upper East Side"=8, 
-                                        "Upper West Side"=9,
-                                        "Inwood and Washington Heights"=10), 
-                         selected = 0)
-      #sliderInput("p.range", label=h3("Price Range (in thousands of dollars)"),
-      #            min = 0, max = 20000, value = c(200, 10000))
-    ),
-    # Show two panels
-    mainPanel(
-      #h4(textOutput("text")),
-      h3(code(textOutput("text1"))),
-      tabsetPanel(
-        # Panel 1 has three summary plots of sales. 
-        tabPanel("Sales summary", plotOutput("distPlot")), 
-        # Panel 2 has a map display of sales' distribution
-        tabPanel("Sales map", plotOutput("distPlot1"))),
-      leafletOutput("map", width = "80%", height = "400px")
-    )
- )
-))
+#init.path = getwd()
+#data.path = paste0(getwd(), '/app/global.R')
+# # Define an UI page
+# shinyUI(
+#   fluidPage(
+#   
+#   mainPanel(
+#     leafletOutput(outputId = "map")
+#     
+# )))
 
+
+# Choices for drop-downs
+GradeLevel <- c(
+  "A" = "A",
+  "B" = "B",
+  "C" = "C",
+  "Z" = "Z",
+  "P" = "P",
+  "N" = "N"
+)
+ViolationType <- c(
+  "Evidence of Mice/Roches/Flies" = 04,
+  "Food Temperature" = 02,
+  "Food Contact Surfaces Not Clean and Sanitized" = 06,
+  "Pest Related Facility Use" = 08,
+  "Non-food Contact Surfaces/Facility Improperly Constructed" = 10
+)
+
+shinyUI(navbarPage("Restaurant Inspection", id="nav",
+                   
+                   tabPanel("Restaurant Map",
+                            div(class="outer",
+                                
+                                tags$head(
+                                  # Include our custom CSS
+                                  includeCSS("app/styles.css"),
+                                  #includeScript("gomap.js")
+                                ),
+                                
+                                leafletOutput("map", width="100%", height="100%"),
+                                # Shiny versions prior to 0.11 should use class="modal" instead.
+                                absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+                                              draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                                              width = 330, height = "auto",
+                                              ### Create a third level header
+                                              h3("Restaurant Violations"),
+                                              selectInput("grade", "Grade", GradeLevel, selected = "A"),
+                                              selectInput("violationtype", "Violation Type", ViolationType, selected = "Food Temperature")
+                                ),
+                                
+                                absolutePanel(id="graphstuff",class = "panel panel-default", fixed=TRUE,
+                                              draggable = TRUE, top=60,left=10,right="auto", bottom="auto",width=300,
+                                              height=200, style="opacity:0.85",
+                                              # div(style="padding: 8px; border-bottom: 1px solid #CCC; background: #FFFFEE;"),
+                                              # h2("Crime around this Restroom"),
+                                              h6(textOutput("totalcrime")),
+                                              plotOutput("circ_plot",height=200)
+                                              
+                                )
+                                
+                            )
+                            
+                            
+                            
+                   )))
