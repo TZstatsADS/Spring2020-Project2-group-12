@@ -17,7 +17,7 @@ library(ggplot2)
 library(RColorBrewer)
 
 init.path = getwd()
-data.path = paste0(init.path, '/app/global.R')
+data.path = paste0(init.path, "/global.R")
 source(data.path)
 
 # Define server logic to draw the map

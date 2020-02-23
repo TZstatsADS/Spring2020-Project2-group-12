@@ -8,13 +8,12 @@ library(dbplyr)
 library(dbplot)
 library(DBI)
 
-#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-setwd("/Users/septcc/Desktop/5243 ADS/project2/Spring2020-Project2-group-12/")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 
 # ================== Load Data ===================
 # Load Data
-df_0 <- read.csv("./data/processed_df.csv")
+df_0 <- read.csv("../data/processed_df.csv")
 
 
 # ================== Text Processing ===================
