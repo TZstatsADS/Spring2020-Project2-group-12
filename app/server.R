@@ -72,5 +72,9 @@ shinyServer(function(input, output){
     else{leafletProxy("map") %>% hideGroup("graderN")}
   }, ignoreNULL = FALSE)
     
+    # The activities data display column in the Data Search Column  
+    output$table1 <- renderDataTable(df,
+                                     options = list(pageLength = 10, lengthMenu = list(c(10))))
+    
 })
 
