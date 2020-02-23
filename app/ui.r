@@ -30,8 +30,8 @@ shinyUI(navbarPage("Restaurant Inspection", id="nav",
                                 
                                 tags$head(
                                   # Include our custom CSS
-                                  includeCSS("app/styles.css"),
-                                  includeScript("app/gomap.js")
+                                  includeCSS("../app/styles.css"),
+                                  includeScript("../app/gomap.js")
                                 ),
                                 
                                 leafletOutput("map", width="100%", height="100%"),
