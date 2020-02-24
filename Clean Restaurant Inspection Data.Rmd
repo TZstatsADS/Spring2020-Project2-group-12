@@ -1,0 +1,55 @@
+---
+title: "Clean Restaurant Inspection Data"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(tidyr)
+### Read and select data
+data <- read.csv("~/Documents/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
+data_1920 <- data %>% mutate(format_inspection_date = mdy(INSPECTION.DATE))%>% 
+  mutate(inspection_year = year(format_inspection_date)) %>%
+  filter(inspection_year == 2019 | inspection_year == 2020)
+data_1920 <- na.omit(data_1920)
+colnames(data_1920)
+
+### Count violations by type of violation.
+df.violation.code <- df %>% group_by(violation.code) %>%count() %>% arrange(desc(n))
+# violation.code     n
+#    <fct>          <int>
+#  1 10F            17284
+#  2 08A             8731
+#  3 06D             6447
+#  4 10B             6041
+#  5 04L             5441
+#  6 06C             5391
+#  7 02G             4359
+#  8 04N             3694
+#  9 02B             3680
+# 10 09C             1937
+### Count violations by borough
+df.boro <- df %>% group_by(boro) %>%count() %>% arrange(desc(n))
+#  boro              n
+# <chr>            <int>
+# 1 Manhattan     33124
+# 2 Brooklyn      22144
+# 3 Queens        20252
+# 4 Bronx          7881
+# 5 Staten Island  2617
+
+### Count violations by "Critical Flag"
+df.critical <- df %>% group_by(critical.flag) %>% count() %>% arrange(desc(n))
+#  critical.flag     n
+#   <fct>         <int>
+# 1 Y             42906
+# 2 N             42210
+# 3 ""              902
+
+
+
+```
+
+
+
