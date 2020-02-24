@@ -76,5 +76,20 @@ shinyServer(function(input, output){
     output$table1 <- renderDataTable(df,
                                      options = list(pageLength = 10, lengthMenu = list(c(10))))
     
+    
+    
+    # output$barplot<- renderPlot({
+    #   ggplot(month_change) + 
+    #     geom_bar(aes(Month, crime_typeInput(),fill="Number of Crimes"), stat = "identity") + 
+    #     geom_point(aes(Month, weatherInput()*.8*min(crime_typeInput()/weatherInput())), colour="black") + 
+    #     geom_line(aes(Month, weatherInput()*.8*min(crime_typeInput()/weatherInput()), group=1, colour="Weather")) + 
+    #     scale_colour_manual("", values=c("Number of Total Crimes"="grey", "Weather"="black")) +  
+    #     scale_fill_manual("",values="grey")+
+    #     scale_y_continuous(sec.axis = sec_axis(~./.8/min(crime_typeInput()/weatherInput()))) +
+    #     labs(title = paste(input$weather, input$crime_type, sep=" & "), y="" ) +
+    #     theme(legend.justification=c(1,1), legend.position=c(1,1), panel.grid.major =element_blank(), 
+    #           panel.grid.minor = element_blank(), panel.background = element_blank())
+    # }
+    # 
 })
 

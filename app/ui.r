@@ -54,6 +54,39 @@ shinyUI(navbarPage("Restaurant Inspection", id="nav",
                                               plotOutput("circ_plot",height=200)
                                               )
                                 )
+                            ),
+                   
+                   
+                   tabPanel("Statistical Analysis",
+                            titlePanel("Summary Statistics"),
+                            wellPanel(tabsetPanel(type="tabs",
+                                                  tabPanel(title="Title 1",
+                                                           br(),
+                                                           div( align="center")
+                                                           
+                                                  ),
+                                                  tabPanel(title="Title 2",
+                                                           br(),
+                                                           div(align="center")
+                                                           
+                                                  ),
+                                                  tabPanel(title="Title 3")
                             )
+                            
+                            
+                            )
+                   ),
+                   
+                   tabPanel("Data Search",
+                            div(width = 12,
+                                h1("whole dataset"), # title for data tab
+                                br(),
+                                dataTableOutput('table1')),
+                            # footer
+                            div(class="footer", em(a("Data from NYC Open Data",href="https://opendata.cityofnewyork.us")))
+                            
+                   )
+                   
+                   
                    )
         )
