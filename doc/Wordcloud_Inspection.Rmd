@@ -1,0 +1,18 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+ 
+
+```{r}
+word_filtered <- df_word %>% 
+    unnest_tokens(word, stemmedwords)
+words_counts <- word_filtered %>%
+  count(word, sort = TRUE) 
+head(words_counts)
+library(wordcloud2)
+my_wordcloud <- wordcloud2(words_counts[1:100, ], size =0.8 , shape = "star")
+my_wordcloud
+```
+
