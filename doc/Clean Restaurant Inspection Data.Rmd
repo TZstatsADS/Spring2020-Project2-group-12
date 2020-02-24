@@ -15,6 +15,68 @@ data_1920 <- data %>% mutate(format_inspection_date = mdy(INSPECTION.DATE))%>%
 data_1920 <- na.omit(data_1920)
 colnames(data_1920)
 
+### Count violations by type of violation.
+df.violation.code <- df %>% group_by(violation.code) %>%count() %>% arrange(desc(n))
+# violation.code     n
+#    <fct>          <int>
+#  1 10F            17284
+#  2 08A             8731
+#  3 06D             6447
+#  4 10B             6041
+#  5 04L             5441
+#  6 06C             5391
+#  7 02G             4359
+#  8 04N             3694
+#  9 02B             3680
+# 10 09C             1937
+### Count violations by borough
+df.boro <- df %>% group_by(boro) %>%count() %>% arrange(desc(n))
+#  boro              n
+# <chr>            <int>
+# 1 Manhattan     33124
+# 2 Brooklyn      22144
+# 3 Queens        20252
+# 4 Bronx          7881
+# 5 Staten Island  2617
+
+### Count violations by "Critical Flag"
+df.critical <- df %>% group_by(critical.flag) %>% count() %>% arrange(desc(n))
+#  critical.flag     n
+#   <fct>         <int>
+# 1 Y             42906
+# 2 N             42210
+# 3 ""              902
+
+### Count mice 
+df_mice<- df %>%
+     filter(grepl('mice', as.character(violation.description)))
+
+### Count rats
+df_rats<- df %>%
+        filter(grepl('rats', as.character(violation.description)))
+
+### Count roaches
+df_roaches <- df%>%
+  filter(grepl('roaches', as.character(violation.description)))
+
+### Count vermin
+df_vermin <- df %>% 
+  filter(grepl('vermin', as.character(violation.description)))
+
+### Analysis who are the worst offenders and draw plots later. 
+df_critical <- df %>% filter(critical.flag=="Y") %>%
+  group_by(dba, score, cuisine) %>% summarise(n=n()) %>% mutate(total.score = score * n)%>% 
+  ungroup() %>% 
+  group_by(dba,cuisine) %>% 
+  summarise(sum.score = sum(total.score)) %>% 
+  arrange(desc(sum.score))
+
+# %>%arrange(desc(score))
+
+
+
+
+
 ```
 
 
