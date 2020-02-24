@@ -63,6 +63,20 @@ df_roaches <- df%>%
 df_vermin <- df %>% 
   filter(grepl('vermin', as.character(violation.description)))
 
+### Analysis who are the worst offenders and draw plots later. 
+df_critical <- df %>% filter(critical.flag=="Y") %>%
+  group_by(dba, score, cuisine) %>% summarise(n=n()) %>% mutate(total.score = score * n)%>% 
+  ungroup() %>% 
+  group_by(dba,cuisine) %>% 
+  summarise(sum.score = sum(total.score)) %>% 
+  arrange(desc(sum.score))
+
+# %>%arrange(desc(score))
+
+
+
+
+
 ```
 
 
