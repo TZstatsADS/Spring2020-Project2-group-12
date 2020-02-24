@@ -47,7 +47,21 @@ df.critical <- df %>% group_by(critical.flag) %>% count() %>% arrange(desc(n))
 # 2 N             42210
 # 3 ""              902
 
+### Count mice 
+df_mice<- df %>%
+     filter(grepl('mice', as.character(violation.description)))
 
+### Count rats
+df_rats<- df %>%
+        filter(grepl('rats', as.character(violation.description)))
+
+### Count roaches
+df_roaches <- df%>%
+  filter(grepl('roaches', as.character(violation.description)))
+
+### Count vermin
+df_vermin <- df %>% 
+  filter(grepl('vermin', as.character(violation.description)))
 
 ```
 
