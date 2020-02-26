@@ -1,7 +1,6 @@
 library(shiny)
 library(shinydashboard)
 library(devtools)
-#install_github("nik01010/dashboardthemes")
 library(dashboardthemes)
 library(leaflet)
 library(leaflet.extras)
@@ -18,23 +17,12 @@ header <- dashboardHeader(title = 'NYC Restaurant Inspection',
 ## =========== Dashboard Sidebar ===========
 sidebar <- dashboardSidebar(
   width = 265,
-  
-  # tags$head(tags$style(HTML('.logo {
-  #                             background-color: #8565c4 !important;
-  #                           }
-  #                           .navbar {
-  #                           background-color: #8565c4 !important;
-  #                           }
-  #                           '))),
-  # uiOutput("userpanel"),
-  
   sidebarMenu(
   menuItem("Home", tabName = "Home", icon = icon("home")),
   menuItem("Introduction", tabName = "Introduction", icon = icon("clipboard"),
            menuSubItem("Guide", tabName = "Guide", icon = icon("arrow-alt-circle-right")),
            menuSubItem("Data Overview", tabName = "Source", icon = icon("arrow-alt-circle-right"))),
   menuItem("Map", tabName = "Map", icon = icon("map")),
- # menuItem("Heatmap", tabName = "Heatmap", icon = icon("map")),
   menuItem("Summary Statistics", tabName = "Statistics", icon = icon("pie-chart")),
   menuItem("About Team", tabName = "Team", icon = icon("address-card")))
 )
@@ -42,20 +30,16 @@ sidebar <- dashboardSidebar(
 
 ## =========== Dashboard Body ===========
 ## Home
-
-
 body.home <- tabItem(tabName = "Home",
                      fluidPage(
                        fluidRow(
                          column(3, valueBox("Area", 'New York City', icon("home"), color = 'purple', width = 15)),
-                         column(3, valueBox("Data", "86004 Restaurants", icon("hamburger"), color = 'purple', width = 15)),
-                         column(3, valueBox("Goal", "Restaurant Violation Inspection", icon("table"), color = 'purple', width = 20))),
+                         column(3, valueBox("Data", "86004 Restaurants", icon("anchor"), color = 'purple', width = 15)),
+                         column(3, valueBox("Goal", "Violation Inspection", icon("table"), color = 'purple', width = 15))),
                        
                        fluidRow(column(3, img(src = "home_page.png", height = 500, width = 800)))
                        )
                      )
-
-
 
 ## Introduction - Guide
 body.guide <- tabItem(tabName = "Guide",
@@ -71,7 +55,6 @@ body.guide <- tabItem(tabName = "Guide",
                               h5(textOutput("guide5")))
                         )
                       ))
-
 
 ## Introduction - Source
 body.source <- tabItem(tabName = "Source",
@@ -117,33 +100,6 @@ body.map <- tabItem(tabName = "Map",
                       )
                     ))
 
-## Heatmap
-body.heatmap <- tabPanel(tabName = "Heatmap",
-
-         sidebarLayout(
-
-           mainPanel(
-             leafletOutput("heatMap",width="100%",height=700)),
-
-           sidebarPanel(
-             # Input: Slider for time of the day ----
-             sliderInput(inputId = "score",
-                         label = "Select score:",
-                         min = 0,
-                         max = 100,
-                         value = 50)
-           )
-         )
-         # fluidPage(
-         #   fluidRow(leafletOutput("mapAct", height = "800px")),
-         #   fluidRow(absolutePanel(top = 150, right = 20,
-         #                          sliderInput("animation", "Time(30 minutes)", min = 0, 
-         #                                      max = 47, value = 0, step = 1, 
-         #                                      animate = animationOptions(interval = 500, loop = FALSE)))),
-         #   fluidRow(absolutePanel(plotOutput("line"), top = 80, left = 300,
-         #                          width = 360, height = 300, draggable = TRUE)))),
-)
-
 ## Statistics
 body.statistics <- tabItem(tabName = "Statistics",
                            fluidRow(
@@ -184,7 +140,7 @@ body.statistics <- tabItem(tabName = "Statistics",
                                              plotOutput("barplot6", height = 500))
                              )
                            ))
-
+# About Team
 body.team <- tabItem(tabName = "Team",
                      mainPanel(
                        h3(textOutput("team0")),
@@ -198,7 +154,7 @@ body.team <- tabItem(tabName = "Team",
 
 
 body <- dashboardBody(
-  #changing theme
+  # Change theme
   shinyDashboardThemes(
     theme = "purple_gradient"),
   
@@ -208,7 +164,6 @@ body <- dashboardBody(
     body.guide,
     body.source,
     body.map,
-    #body.heatmap,
     body.statistics,
     body.team
   )
@@ -217,7 +172,6 @@ body <- dashboardBody(
 
 ## =========== UI Interface ===========
 ui <- dashboardPage(
-  #skin = "purple",
   header,
   sidebar,
   body
