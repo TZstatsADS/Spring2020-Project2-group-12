@@ -19,10 +19,7 @@ library(gifski)
 library(rsconnect)
 
 
-
 ## ============= Load Data =============== 
-#init.path = dirname(rstudioapi::getActiveDocumentContext()$path)
-#data.path = paste0(init.path, "/global.R")
 source("global.R")
 
 
@@ -181,25 +178,7 @@ shinyServer(function(input, output){
       add_pie(hole = 0.6) %>%
       layout(title = "Donut Charts of the Six Most Popular Cuisines", showlegend = F)
   })
-  
-  
-  # ## Bar Plot3: Score
-  # output$barplot3 <- renderPlot({
-  #   barplot(df.bar$score,names.arg = df$name,  horiz = TRUE,cex.names=1, las=1,
-  #                 main = "Violation Score Rank of Fast Foods",
-  #                 xlab = "Violation Total Scores",
-  #                 yaxis = list(range = c(0, 30000)))
-    
-  # })
-  
-  # ## Bar Plot4: Total Scores of Restaurants with Critical Violation
-  # output$barplot4 <- renderPlotly({
-  #   
-  #   plot_ly(head(df_critical, 15), x= ~sum.score, y = ~dba,  type = 'bar', orientation = 'h') %>%  
-  #     layout(title = "Total Violation Score Ranking of Restaurants with Critical Violation (Top 15)",
-  #            xaxis = list(title = "Total Score"),
-  #            yaxis = list(title = "Name"))
-  # })
+
   
   ## Bar Plot5: Top 15 Popular Fast Food and Cafes
   output$barplot5 <- renderPlotly({
@@ -212,22 +191,7 @@ shinyServer(function(input, output){
     
   })
   
-  ## Bar Plot6: Year
-  # output$barplot4 <- renderImage({
-  #   # A temp file to save the output.
-  #   # This file will be removed later by renderImage
-  #   outfile <- tempfile(fileext='.gif')
-  #   
-  #   anim_save("outfile.gif", animate(year_perc))
-  #   
-  #   # Return a list containing the filename
-  #   list(src = "outfile.gif",
-  #        contentType = 'image/gif'
-  #        # width = 400,
-  #        # height = 300,
-  #        # alt = "This is alternate text"
-  #   )}, deleteFile = TRUE)
-  
+  ## Bar Plot6
   output$barplot6 <- renderPlot({
     year_perc
   })
