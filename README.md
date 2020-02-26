@@ -7,8 +7,8 @@
 ## Project Title: NYC Restaurant Health Inspection 
 Term: Spring 2020
 #******************
-+ Shiny Link: 
-+ Team 12
++ **Shiny Link**: 
++ **Team 12**
 	+ Qing Gao(qg2175)
 	+ Xinwen Miao(xm2242)
 	+ Wenjie Xie(wx2223)
@@ -22,7 +22,7 @@ Our shiny app is about the inspection results of restaurants in the five borough
 
   Individuals like residents or travelers are also welcomed to use the app. They can get some references when        choosing the next place to eat and enjoy.  
 
-+ Data Source: Our data is from [NYC Open Data](https://opendata.cityofnewyork.us/)
++ **Data Source**: Our data is from [NYC Open Data](https://opendata.cityofnewyork.us/)
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
