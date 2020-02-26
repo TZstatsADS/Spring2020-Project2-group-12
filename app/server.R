@@ -1,12 +1,11 @@
 library(shiny)
 library(shinyWidgets)
 library(shinythemes)
-
 library(DT)
 library(leaflet)
 library(ggplot2)
 library(RColorBrewer)
-
+library(plotly)
 library(dplyr)
 library(tools)
 library(tidyverse)
@@ -14,10 +13,7 @@ library(lubridate)
 library(dbplyr)
 library(dbplot)
 library(DBI)
-library(plotly)
-library(dplyr)
 library(tidyr)
-library(ggplot2)
 library(gganimate)
 library(gifski)
 library(rsconnect)
@@ -45,6 +41,12 @@ shinyServer(function(input, output){
   
   output$team0 <- renderText({"About Team"})
   output$team1 <- renderText({"This app is developed by:"})
+  output$team2 <- renderText({"Qing Gao | email: qg2175@columbia.edu"})
+  output$team3 <- renderText({"Siqi Zhao | email: sz2866@columbia.edu"})
+  output$team4 <- renderText({"Wenjie Xie | email: wx2223@columbia.edu"})
+  output$team5 <- renderText({"Xinwen Miao | email: xm2242@columbia.edu"})
+  output$team6 <- renderText({"Ziyang Zhang | email: zz2683@columbia.edu"})
+
   
   output$datatable <- renderDataTable({
     df_display
@@ -103,8 +105,6 @@ shinyServer(function(input, output){
                  )
   })
   
-
-  
   ## Bar Plot1: Boro
   selected_boroughInput <- reactive({
     switch(input$selected_borough,
@@ -117,9 +117,11 @@ shinyServer(function(input, output){
   })
   
   output$barplot1 <- renderPlotly({
+    colors <- rev(brewer.pal(7, "Purples"))
     borough %>% 
       select(violation.short.desp, count=selected_boroughInput()) %>% 
-      plot_ly(., x = ~violation.short.desp, y = ~count, type = 'bar', name = "Counts(Borough)") %>%
+      plot_ly(., x = ~violation.short.desp, y = ~count, type = 'bar', name = "Counts(Borough)",
+              colors = colors) %>%
       layout(title = "Number of Restaurants Per Violation Type By Borough",
              xaxis = list(title = "Violation")) %>% 
        add_trace(x = ~violation.short.desp, y = ~borough$all/6, type = 'scatter', mode = 'lines', name = 'All Restaurants Trend/6',
@@ -141,9 +143,13 @@ shinyServer(function(input, output){
   })
   
   output$barplot2 <- renderPlotly({
+    colors <- rev(brewer.pal(7, "Purples"))
+    
     cuisine %>% 
       select(violation.short.desp, count=selected_cuisineInput()) %>%
-      plot_ly(., x = ~violation.short.desp, y = ~count, type = 'bar', name = "Counts(Cuisine)") %>%
+      plot_ly(., x = ~violation.short.desp, y = ~count, 
+              type = 'bar', name = "Counts(Cuisine)",
+              colors = colors) %>%
       layout(title = "Number of Restaurants Per Violation Type By Cuisine",
              xaxis = list(title = "Cuisine")) #%>%
       #add_trace(x = ~violation.short.desp, y = ~cuisine$all/5, type = 'scatter', mode = 'lines', name = 'All Restaurants Trend/5',
@@ -164,26 +170,50 @@ shinyServer(function(input, output){
     )
   })
   
+  
   output$donut <- renderPlotly({
+    colors <- rev(brewer.pal(6, "Purples"))
+    
     df_cuisine_grade %>%
       filter(cuisine == selected_cuisine()) %>%
-      plot_ly(labels = ~grade, values = ~freq) %>%
-      add_pie(hole = 0.4) %>%
+      plot_ly(labels = ~grade, values = ~freq,
+              marker = list(colors = colors, line = list(color='#FFFFFF', width=2))) %>%
+      add_pie(hole = 0.6) %>%
       layout(title = "Donut Charts of the Six Most Popular Cuisines", showlegend = F)
   })
   
   
-  ## Bar Plot3: Score
-  output$barplot3 <- renderPlot({
-    barplot(df.bar$score,names.arg = df$name,  horiz = TRUE,cex.names=1, las=1,
-                  main="Violation Score Rank of Fast Foods",
-                  xlab="Violation Total Scores",
-                  yaxis = list(range = c(0, 30000)))
+  # ## Bar Plot3: Score
+  # output$barplot3 <- renderPlot({
+  #   barplot(df.bar$score,names.arg = df$name,  horiz = TRUE,cex.names=1, las=1,
+  #                 main = "Violation Score Rank of Fast Foods",
+  #                 xlab = "Violation Total Scores",
+  #                 yaxis = list(range = c(0, 30000)))
+    
+  # })
+  
+  # ## Bar Plot4: Total Scores of Restaurants with Critical Violation
+  # output$barplot4 <- renderPlotly({
+  #   
+  #   plot_ly(head(df_critical, 15), x= ~sum.score, y = ~dba,  type = 'bar', orientation = 'h') %>%  
+  #     layout(title = "Total Violation Score Ranking of Restaurants with Critical Violation (Top 15)",
+  #            xaxis = list(title = "Total Score"),
+  #            yaxis = list(title = "Name"))
+  # })
+  
+  ## Bar Plot5: Top 15 Popular Fast Food and Cafes
+  output$barplot5 <- renderPlotly({
+    popular %>% 
+      plot_ly(x = ~average_score, y = ~dba, type = 'bar', orientation = 'h') %>% 
+      
+      layout(title = "Average Score Ranking of Most Popular Fast Food/Cafes (Top 15)",
+             xaxis = list(title = "Average Score"),
+             yaxis = list(title = "Name"))
     
   })
   
-  ## Bar Plot4: Year
-  # output$barplot3 <- renderImage({
+  ## Bar Plot6: Year
+  # output$barplot4 <- renderImage({
   #   # A temp file to save the output.
   #   # This file will be removed later by renderImage
   #   outfile <- tempfile(fileext='.gif')
@@ -198,7 +228,7 @@ shinyServer(function(input, output){
   #        # alt = "This is alternate text"
   #   )}, deleteFile = TRUE)
   
-  output$barplot4 <- renderPlot({
+  output$barplot6 <- renderPlot({
     year_perc
   })
   
