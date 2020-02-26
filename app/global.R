@@ -7,7 +7,6 @@ library(dbplyr)
 library(dbplot)
 library(DBI)
 library(plotly)
-library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(gganimate)
@@ -28,6 +27,7 @@ load('new_data.Rda')
 ##  =================== Data Overview ===================
 df_display <- df %>% 
   select(dba, boro, grade, grade.date, violation_score=score, critical.flag,inspection_date=format_inspection_date,violation.description, phone, address)
+
 
 ##  =================== Data: Mao ===================
 
@@ -93,16 +93,13 @@ df_cuisine_grade <- df %>% group_by(cuisine,grade) %>%
 
 # Analysis who are the worst offenders and draw plots later. 
 df_critical <- df %>% filter(critical.flag=="Y") %>%
-  group_by(dba, score, cuisine) %>% 
-  arrange(-score) %>% 
-  dplyr::summarise(n=n()) %>% 
-  mutate(total.score = score * n)%>% 
-  ungroup() %>% 
-  group_by(dba,cuisine) %>% 
-  summarise(sum.score = sum(total.score)) %>% 
-  ungroup() %>% 
+  group_by(dba) %>% 
+  dplyr::summarise(sum.score=sum(score)) %>% 
   arrange(desc(sum.score)) %>% 
-  mutate(dba = gsub(".*, ","",dba))
+  mutate(dba = gsub(".*, ","",dba)) %>% head(15)
+
+df_critical$dba <- factor(df_critical$dba, levels = unique(df_critical$dba)[order(df_critical$sum.score, decreasing = TRUE)])
+
 
 name <- df_critical$dba
 score <- df_critical$sum.score
@@ -110,6 +107,20 @@ data_critical <- data.frame(score[1:50], name[1:50])
 short <- data_critical
 df.bar <- short[order(short$score,decreasing = FALSE),]
 par(mar = c(5.1, 7, 4.1, 2.1))
+
+
+popular <- df %>% 
+  filter(critical.flag=="Y") %>% 
+  group_by(dba) %>% 
+  summarise(branch.no=n(), total_score=sum(score)) %>% 
+  arrange(desc(branch.no)) %>%
+  head(15) %>% 
+  ungroup() %>% 
+  mutate(dba = gsub(".*, ","",dba)) %>% 
+  mutate(average_score=total_score/branch.no) %>% arrange(desc(average_score))
+
+popular$dba <- factor(popular$dba, levels = unique(popular$dba)[order(popular$average_score, decreasing = TRUE)])
+
 
 
 ## =============== Bar Plot 4: Year =============== 
@@ -127,7 +138,6 @@ year_perc <- ggplot(year_data, aes(x = factor(inspection_year), y = percent*100,
   theme_minimal(base_size = 14) 
 
 
-
 # year_perc <- ggplot(year_data, aes(x = factor(grade), y = percent*100, fill=grade)) +
 #   geom_bar(stat="identity", width = 0.7) +
 #   labs(x = "grade", y = "percent") +
@@ -135,12 +145,11 @@ year_perc <- ggplot(year_data, aes(x = factor(inspection_year), y = percent*100,
 #   transition_states(inspection_year,
 #                     transition_length = 5,
 #                     state_length = 1)
-
+# 
 # animate(year_perc, duration = 5, fps = 20, width = 200, height = 200, renderer = gifski_renderer())
 # anim_save("output.gif")
 
-# str(df)
-# str(new)
+
 
 
 
