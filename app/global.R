@@ -7,169 +7,38 @@ library(dbplyr)
 library(dbplot)
 library(DBI)
 library(plotly)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+library(hexbin)
 
-
-# ================== Load Data ===================
-# Load Data
-# df_0 <- read.csv("../data/processed_df.csv")
-
-
-# ================== Text Processing & Data cleaning ===================
-# https://rstudio-pubs-static.s3.amazonaws.com/408658_512da947714740b99253228f084a08a9.html
-# to.upper <- function(word){
-#   string <- strsplit(as.character(word), " ")[[1]]
-#   s <- paste(substring(string, 1,1), tolower(substring(string, 2)), sep="", collapse=" ")
-#   str_replace(s, " \\(.*\\)", "")
-# }
-# 
-# number.to.phone <- function(number){
-#   first <- substring(number,1,3)
-#   second <- substring(number, 4,6)
-#   third <- substring(number, 7, 9)
-#   paste0("(", first, ") ", second, "-", third)
-# }
-# 
-# address <- function(building, street, boro, zipcode){
-#   if(boro == "Manhattan") boro = "New York"
-#   paste0(building, " ", street, ", ", boro, ", ", "NY ", zipcode) 
-# }
-
-
-ViolationType <- list(
-  "04"= "Evidence of Mice/Roches/Flies",
-  "02"= "Food Temperature",
-  "06"= "Food Contact Surfaces Not Clean and Sanitized",
-  "08"= "Pest Related Facility Use",
-  "10"= "Non-food Contact Surfaces/Facility Improperly Constructed")
-
-# df <- df_0 %>%
-#   filter(grade %in% c('A', 'B', 'C', 'Z', 'P', 'N') &
-#            !is.na(latitude) & !is.na(longitude)) %>%
-#   mutate(dba = map_chr(dba, function(x) to.upper(x)),
-#          building = map_chr(building, function(x) to.upper(x)),
-#          street = map_chr(street, function(x) to.upper(x)),
-#          phone = map_chr(phone, function(x) number.to.phone(x)),
-#          boro = as.character(boro),
-#          address = address(building, street, boro, zipcode))%>% 
-#   mutate(violation.short.desp = ViolationType[substring(violation.code, 0, 2)])
-# 
-# 
-# save(df, file="../output/df.RData")
 
 #  =================== Load Cleaned Data ===================
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-load('../output/df.RData') 
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+load('df.RData') 
+load('new_data.Rda')
+
+# df.map <- merge(df, new %>% select(dba, rating), by = "dba", all.x = TRUE) %>%
+#   unique() %>%
+#   mutate(rating = replace(rating, is.na(rating), "Not avaliable"))
 
 
-#  =================== Grade ===================
-# Extract grade
-grade <- df %>%
-  filter(grade %in% c('A', 'B', 'C', 'Z', 'P', 'N'))
+##  =================== Data Overview ===================
+df_display <- df %>% 
+  select(dba, boro, grade, grade.date, violation_score=score, critical.flag,inspection_date=format_inspection_date,violation.description, phone, address)
 
-graderA <- df[df$grade == "A",] 
-graderB <- df[df$grade == "B",]
-graderC <- df[df$grade == "C",]
-graderZ <- df[df$grade == "Z",] 
-graderP <- df[df$grade == "P",] 
-graderN <- df[df$grade == "N",] 
+##  =================== Data: Mao ===================
 
-
-
-## ============ Cuisine & Grade ===============
-df_cuisine_grade <- df %>% group_by(cuisine,grade) %>% 
-  dplyr::summarise(freq = n()) %>% 
-  dplyr::arrange(desc(freq)) %>% 
-  ungroup() %>% 
-  group_by(cuisine) %>% 
-  filter(cuisine %in% c("American", "Chinese", "Mexican", "Italian", "Japanese", "Caribbean", "Spanish"))  # top 11 most popular restaurants
-
-ame_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "American") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-chn_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "Chinese") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-mexican_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "Mexican") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-jap_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "Japanese") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-carib_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "Caribbean") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-spn_cuisine_grade <- df_cuisine_grade %>% filter(cuisine == "Spanish") %>%
-  dplyr::mutate(perc= freq / sum(freq)) %>% 
-  arrange(desc(perc)) %>% 
-  mutate(perc_cumsum=cumsum(perc), 
-         ymin = c(0, head(perc_cumsum, n=-1)),
-         midpoint = cumsum(perc) - perc / 2, 
-         grade = factor(grade, levels = rev(as.character(grade))))
-
-p <- plot_ly() %>% 
-  add_pie(data = ame_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "American",
-          marker = list(colors= c( "#56B4E9","#E69F00", "#009E73", "#CC79A7", "#D55E00")),
-          domain = list(row = 0, column = 0),
-          textinfo = 'label') %>% 
-  add_pie(data = chn_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "Chinese",
-          domain = list(row = 0, column = 1),
-          textinfo = 'label')  %>% 
-  add_pie(data = mexican_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "Mexican",
-          domain = list(row = 0, column = 2),
-          textinfo = 'label')  %>% 
-  add_pie(data = jap_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "Japenese",
-          domain = list(row = 1, column = 0),
-          textinfo = 'label')  %>% 
-  add_pie(data = carib_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "Caribbean",
-          domain = list(row = 1, column = 1),
-          textinfo = 'label')  %>% 
-  add_pie(data = spn_cuisine_grade, labels = ~grade, values = ~perc,
-          name = "Spanish",
-          domain = list(row = 1, column = 2),
-          textinfo = 'label')  %>% 
-  layout(title = "Grades by Cuisine", showlegend = F,
-         grid=list(rows=2, columns=3),
-         annotations = list(
-           list(x = 0.08 , y = 1, text = "American", showarrow = F, xref='paper', yref='paper'),
-           list(x = 0.50 , y = 1, text = "Chinese", showarrow = F, xref='paper', yref='paper'),
-           list(x = 0.90 , y = 1, text = "Mexican", showarrow = F, xref='paper', yref='paper'),
-           list(x = 0.08 , y = 0.46, text = "Japenese", showarrow = F, xref='paper', yref='paper'),
-           list(x = 0.50 , y = 0.46, text = "Caribbean", showarrow = F, xref='paper', yref='paper'),
-           list(x = 0.90 , y = 0.46, text = "Spanish", showarrow = F, xref='paper', yref='paper'))) 
-p
+df.map <- df %>%
+  mutate(violation.description = na_if(as.character(violation.description), "")) %>%
+  mutate(violation.description = str_replace(violation.description, "\"\"Wash hands” sign not posted at hand wash facility.",
+                                         '"Wash hands” sign not posted at hand wash facility.')) %>%
+  filter(!is.na(violation.description)) 
 
 
-## =============== Bar Plot ===============
+## =============== Bar Plot 1: Boro ===============
 df <- df %>% 
   mutate(violation.short.desp = ifelse(str_detect(violation.code, "02"), "Food Temperature Prob",
                                        ifelse(str_detect(violation.code, "(03)|(09)"),"Food Source Questionable",
@@ -187,9 +56,94 @@ df <- df %>%
 borough <- df %>% 
   select(boro, violation.short.desp) %>% 
   group_by(boro, violation.short.desp) %>%
-  count(name = "freq")
-  # ungroup() %>% filter(violation.short.desp!= "NULL") %>% 
-  # pivot_wider(names_from = boro, values_from = freq)
-  
-#borough$all <- rowSums(borough[,-1])  
+  dplyr::count(name = "freq") %>%
+  ungroup() %>%
+  filter(violation.short.desp!= "NULL") %>%
+  pivot_wider(names_from = boro, values_from = freq)
+
+borough$all <- rowSums(borough[,-1])
+
+## =============== Bar Plot 2: Cuisine ===============
+
+cuisine <- df %>% filter(violation.short.desp!= "NULL") %>% 
+  select(cuisine, violation.short.desp) %>% 
+  #filter(cuisine %in%  c("American","Chinese","Mexican","Japanese","Caribbean","Spanish")) %>% 
+  group_by(cuisine, violation.short.desp) %>%
+  dplyr::count(name = "freq") %>% 
+  ungroup() %>% 
+  #mutate(freq=ifelse(is.na(freq), 0, freq)) %>% 
+  pivot_wider(names_from = cuisine, values_from = freq)
+
+cuisine$all <- rowSums(cuisine[,-1], na.rm = T)
+cuisine <- cuisine %>%  select("violation.short.desp","American","Chinese","Mexican","Italian", "Japanese","Caribbean","Spanish", "all") 
+#cuisineNames <- colnames(cuisine)
+
+
+## ============ Donut: Cuisine & Grade ===============
+
+df_cuisine_grade <- df %>% group_by(cuisine,grade) %>% 
+  dplyr::summarise(freq = n()) %>% 
+  dplyr::arrange(desc(freq)) %>% 
+  ungroup() %>% 
+  group_by(cuisine) %>% 
+  filter(cuisine %in% c("American", "Chinese", "Mexican", "Italian", "Japanese", "Caribbean", "Spanish"))  # top 11 most popular restaurants
+
+
+## =============== Bar Plot 3: Score ===============
+
+# Analysis who are the worst offenders and draw plots later. 
+df_critical <- df %>% filter(critical.flag=="Y") %>%
+  group_by(dba, score, cuisine) %>% 
+  arrange(-score) %>% 
+  dplyr::summarise(n=n()) %>% 
+  mutate(total.score = score * n)%>% 
+  ungroup() %>% 
+  group_by(dba,cuisine) %>% 
+  summarise(sum.score = sum(total.score)) %>% 
+  ungroup() %>% 
+  arrange(desc(sum.score)) %>% 
+  mutate(dba = gsub(".*, ","",dba))
+
+name <- df_critical$dba
+score <- df_critical$sum.score
+data_critical <- data.frame(score[1:50], name[1:50])  
+short <- data_critical
+df.bar <- short[order(short$score,decreasing = FALSE),]
+par(mar = c(5.1, 7, 4.1, 2.1))
+
+
+## =============== Bar Plot 4: Year =============== 
+load('timeTrend.RData') 
+
+year_data <- tt %>%
+  filter(grade %in% c('A','B','C')) %>%
+  group_by(inspection_year,boro,grade) %>% 
+  summarize(count = n()) %>%
+  transmute(grade, percent =(count/sum(count)))
+
+year_perc <- ggplot(year_data, aes(x = factor(inspection_year), y = percent*100, fill = factor(grade))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "Year", y = "percent", fill = "grade") +
+  theme_minimal(base_size = 14) 
+
+
+
+# year_perc <- ggplot(year_data, aes(x = factor(grade), y = percent*100, fill=grade)) +
+#   geom_bar(stat="identity", width = 0.7) +
+#   labs(x = "grade", y = "percent") +
+#   theme_minimal(base_size = 14) +
+#   transition_states(inspection_year,
+#                     transition_length = 5,
+#                     state_length = 1)
+
+# animate(year_perc, duration = 5, fps = 20, width = 200, height = 200, renderer = gifski_renderer())
+# anim_save("output.gif")
+
+# str(df)
+# str(new)
+
+
+
+
+
 
