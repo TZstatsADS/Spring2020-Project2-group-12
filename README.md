@@ -1,11 +1,12 @@
 # Project 2: Shiny App Development Version 2.0
 
-![screenshot](doc/screenshot2.png)
+![screenshot](doc/screen1.png)
+![screenshot](doc/screen2.png)
 
-## Project Title: NYC Restaurant Health Inspection 
+
+## NYC Restaurant Health Inspection 
 Term: Spring 2020
-#******************
-+ **Shiny Link**: 
++ **Shiny Link**: https://ziyang----zhang.shinyapps.io/AppTest/
 + **Team 12**
 	+ Qing Gao(qg2175)
 	+ Xinwen Miao(xm2242)
@@ -24,15 +25,15 @@ Our shiny app is about the inspection results of restaurants in the five borough
 + **Contribution statement**: 
 All team members contributed equally in all stages of this project. 
 
- + **Qing Gao**: Helped the data preprocessing, built up the basic google map page, generated statistical plots and optimized the layout and style of the app.
+ + Qing Gao: Helped the data preprocessing, built up the basic google map page, generated statistical plots and optimized the layout and style of the app.
  
- + **Xinwen Miao**: Carried out time trend data processing and built the bar plot gif. Contributed to the GitHub respository. Generated the introduction and user guide parts.
+ + Xinwen Miao: Carried out time trend data processing and built the bar plot gif. Contributed to the GitHub respository. Generated the introduction and user guide parts.
 
- + **Wenjie Xie**: Built up the basic google map page and contributed to presentation preparation. Did web scraping    for yelp score data.
+ + Wenjie Xie: Built up the basic google map page and contributed to presentation preparation. Did web scraping    for yelp score data.
 
- + **Ziyang Zhang**: Carried out the data preprocessing, built up the basic google map page, generated the heatmap and delivered the group presentation. 
+ + Ziyang Zhang: Carried out the data preprocessing, built up the basic google map page, generated the heatmap and delivered the group presentation. 
  
- + **Siqi Zhao**: Took charge of the Statistical Analysis Tab and made various kinds of plots. Besides, involved in data cleaning, wrangling and presentation preparation.
+ + Siqi Zhao: Took charge of the Statistical Analysis Tab and made various kinds of plots. Besides, involved in data cleaning, wrangling and presentation preparation.
 
 All team members approve our work presented in this GitHub repository including this contributions statement. 
 
