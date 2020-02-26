@@ -15,13 +15,8 @@ library(hexbin)
 
 
 #  =================== Load Cleaned Data ===================
-#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 load('df.RData') 
 load('new_data.Rda')
-
-# df.map <- merge(df, new %>% select(dba, rating), by = "dba", all.x = TRUE) %>%
-#   unique() %>%
-#   mutate(rating = replace(rating, is.na(rating), "Not avaliable"))
 
 
 ##  =================== Data Overview ===================
@@ -30,7 +25,6 @@ df_display <- df %>%
 
 
 ##  =================== Data: Mao ===================
-
 df.map <- df %>%
   mutate(violation.description = na_if(as.character(violation.description), "")) %>%
   mutate(violation.description = str_replace(violation.description, "\"\"Wash hands” sign not posted at hand wash facility.",
@@ -76,11 +70,9 @@ cuisine <- df %>% filter(violation.short.desp!= "NULL") %>%
 
 cuisine$all <- rowSums(cuisine[,-1], na.rm = T)
 cuisine <- cuisine %>%  select("violation.short.desp","American","Chinese","Mexican","Italian", "Japanese","Caribbean","Spanish", "all") 
-#cuisineNames <- colnames(cuisine)
 
 
 ## ============ Donut: Cuisine & Grade ===============
-
 df_cuisine_grade <- df %>% group_by(cuisine,grade) %>% 
   dplyr::summarise(freq = n()) %>% 
   dplyr::arrange(desc(freq)) %>% 
@@ -90,7 +82,6 @@ df_cuisine_grade <- df %>% group_by(cuisine,grade) %>%
 
 
 ## =============== Bar Plot 3: Score ===============
-
 # Analysis who are the worst offenders and draw plots later. 
 df_critical <- df %>% filter(critical.flag=="Y") %>%
   group_by(dba) %>% 
@@ -99,7 +90,6 @@ df_critical <- df %>% filter(critical.flag=="Y") %>%
   mutate(dba = gsub(".*, ","",dba)) %>% head(15)
 
 df_critical$dba <- factor(df_critical$dba, levels = unique(df_critical$dba)[order(df_critical$sum.score, decreasing = TRUE)])
-
 
 name <- df_critical$dba
 score <- df_critical$sum.score
@@ -138,16 +128,6 @@ year_perc <- ggplot(year_data, aes(x = factor(inspection_year), y = percent*100,
   theme_minimal(base_size = 14) 
 
 
-# year_perc <- ggplot(year_data, aes(x = factor(grade), y = percent*100, fill=grade)) +
-#   geom_bar(stat="identity", width = 0.7) +
-#   labs(x = "grade", y = "percent") +
-#   theme_minimal(base_size = 14) +
-#   transition_states(inspection_year,
-#                     transition_length = 5,
-#                     state_length = 1)
-# 
-# animate(year_perc, duration = 5, fps = 20, width = 200, height = 200, renderer = gifski_renderer())
-# anim_save("output.gif")
 
 
 
