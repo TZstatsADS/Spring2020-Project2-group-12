@@ -16,80 +16,112 @@ library(leaflet)
 library(ggplot2)
 library(RColorBrewer)
 
-init.path = getwd()
+
+## ============= Load Data =============== 
+init.path = dirname(rstudioapi::getActiveDocumentContext()$path)
 data.path = paste0(init.path, "/global.R")
 source(data.path)
 
-# Define server logic to draw the map
+
+## =============  Define server logic to draw the map ============= 
 shinyServer(function(input, output){
-      
-  output$map <- renderLeaflet({
-    m <- leaflet() %>%
-      addProviderTiles("CartoDB.Positron", 
-                       options = providerTileOptions(noWrap = TRUE)) %>%
-      setView(-73.9252853,40.7910694,zoom = 13) %>%
-      addResetMapButton()
-    
-    rtype <- reactive({
-      r <- df
-      if(input$grade == TRUE){r <- filter(r, grade == "Yes")}
-      r
-    })
-    
-      leafletProxy("map", data = graderA) %>%
-      addMarkers(lng = graderA$longitude, lat = graderA$latitude, group = "graderA",
-                                                       clusterOptions = markerClusterOptions())
-      leafletProxy("map", data = graderB) %>%
-      addMarkers(lng = graderB$longitude, lat = graderB$latitude,group = "graderB",
-                                                       clusterOptions = markerClusterOptions())
-      leafletProxy("map", data = graderC) %>%
-      addMarkers(lng = graderC$longitude, lat = graderC$latitude,group = "graderC",
-                                                       clusterOptions = markerClusterOptions())
-      leafletProxy("map", data = graderP) %>%
-      addMarkers(lng = graderP$longitude, lat = graderP$latitude,group = "graderP",
-                                                       clusterOptions = markerClusterOptions())
-      leafletProxy("map", data = graderZ) %>%
-      addMarkers(lng = graderZ$longitude, lat = graderZ$latitude,group = "graderZ",
-                                                       clusterOptions = markerClusterOptions())
-      leafletProxy("map", data = graderN) %>% 
-      addMarkers(lng = graderN$longitude, lat = graderN$latitude,group = "graderN",
-                                                       clusterOptions = markerClusterOptions())
-    m
-    })
   
-    observeEvent(input$grade, {
-    if("A" %in% input$grade) leafletProxy("map") %>% showGroup("graderA")
-    else{leafletProxy("map") %>% hideGroup("graderA")}
-    if("B" %in% input$grade) leafletProxy("map") %>% showGroup("graderB")
-    else{leafletProxy("map") %>% hideGroup("graderB")}
-    if("C" %in% input$grade) leafletProxy("map") %>% showGroup("graderC")
-    else{leafletProxy("map") %>% hideGroup("graderC")}
-    if("P" %in% input$grade) leafletProxy("map") %>% showGroup("graderP")
-    else{leafletProxy("map") %>% hideGroup("graderP")}
-    if("Z" %in% input$grade) leafletProxy("map") %>% showGroup("graderZ")
-    else{leafletProxy("map") %>% hideGroup("graderZ")}
-    if("N" %in% input$grade) leafletProxy("map") %>% showGroup("graderN")
-    else{leafletProxy("map") %>% hideGroup("graderN")}
-  }, ignoreNULL = FALSE)
+  ## Map
+  filteredData <- reactive({
+    if(is.null(input$grade1)){selected_grade = levels(df$grade)}
+    else{selected_grade = input$grade1}
     
-    # The activities data display column in the Data Search Column  
-    output$table1 <- renderDataTable(df,
-                                     options = list(pageLength = 10, lengthMenu = list(c(10))))
+    if(is.null(input$boro1)){selected_boro = levels(df$boro)}
+    else{selected_boro = input$boro1}
     
+    if(is.null(input$cuisine1)){selected_boro = levels(df$cuisine)}
+    else{selected_cuisine = input$cuisine1}
     
+    df %>% 
+      filter(grade %in% selected_grade) %>%
+      filter(boro %in% selected_boro) %>%
+      filter(cuisine %in% selected_cuisine)
+  })
+  
+  output$mapMarker <- renderLeaflet({
+    leaflet(options = leafletOptions(minZoom = 8, maxZoom = 18)) %>% 
+      setView(-73.9252853, 40.7910694, zoom = 10) %>% 
+      addTiles('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png') %>%
+      addMarkers(lng = df$longitude, lat = df$latitude,
+                 #popup = content,
+                 clusterOptions = markerClusterOptions(),
+                 icon = list(iconUrl = 'https://github.com/TZstatsADS/Spring2020-Project2-group-12/blob/master/doc/restaurant_logo.png',
+                             iconSize = c(25,25)))
+  })
+  
+  
+  observe({
+    df.marker = filteredData()
+    leafletProxy("mapMarker",data = df.marker) %>%
+      fitBounds(lat1 = min(df.marker$latitude), 
+                lng1 = min(df.marker$longitude), 
+                lat2 = max(df.marker$latitude), 
+                lng2 = max(df.marker$longitude))%>%
+      clearMarkerClusters()%>%
+      clearPopups() %>%
+      clearMarkers() %>%
+      addMarkers(lng = ~longitude, lat = ~latitude,
+                       popup = ~paste(sep = "<br/>",
+                                      paste("<font size=1.8>", "<font color=purple>", "<b>", dba, "</b>"),
+                                      paste0("<font size=1>", "<font color=black>", address, "</b>"),     
+                                      paste0(phone),
+                                      paste0("Grade: ", grade),
+                                      paste0("Violation Description: ", violation.description)),
+                       clusterOptions = markerClusterOptions(),
+                 icon = icon("home"))
+  })
+  
+  ## Pie Chart
+  output$plot <- renderPlotly(
+    p
+  )
+  
+  # Bar Plot
+  # selected_cuisineInput <- reactive({
+  #   switch(input$selected_borough,
+  #          "American" = borough$American,
+  #          "Brooklyn" = borough$Brooklyn,
+  #          "Manhattan" = borough$Manhattan,
+  #          "Queens" = borough$Queens,
+  #          "Staten Island" = borough$`Staten Island`,
+  #          "all"=borough$all)
+  # })
+  # 
+  
+  output$barplot <- renderPlotly({
+    p <- ggplot(data = borough, aes(x = violation.short.desp, y = freq, fill = boro)) +
+      geom_bar(stat="identity")
     
-    # output$barplot<- renderPlot({
-    #   ggplot(month_change) + 
-    #     geom_bar(aes(Month, crime_typeInput(),fill="Number of Crimes"), stat = "identity") + 
-    #     geom_point(aes(Month, weatherInput()*.8*min(crime_typeInput()/weatherInput())), colour="black") + 
-    #     geom_line(aes(Month, weatherInput()*.8*min(crime_typeInput()/weatherInput()), group=1, colour="Weather")) + 
-    #     scale_colour_manual("", values=c("Number of Total Crimes"="grey", "Weather"="black")) +  
-    #     scale_fill_manual("",values="grey")+
-    #     scale_y_continuous(sec.axis = sec_axis(~./.8/min(crime_typeInput()/weatherInput()))) +
-    #     labs(title = paste(input$weather, input$crime_type, sep=" & "), y="" ) +
-    #     theme(legend.justification=c(1,1), legend.position=c(1,1), panel.grid.major =element_blank(), 
-    #           panel.grid.minor = element_blank(), panel.background = element_blank())
-    # }
-    # 
+    ggplotly(p) %>% layout(height = 500, width = 500)
+
+  })
+
+  
+  # output$barplot<- renderPlot({
+  #   
+  #   p <- ggplot(borough) + 
+  #     geom_bar(aes(violation.short.desp, selected_cuisineInput(), fill="Number of Restaurants"), stat = "identity") + 
+  #     geom_point(aes(violation.short.desp, borough$"all"/5), colour="black") +
+  #     geom_line(aes(violation.short.desp, borough$"all"/5), group=1)+
+  #     theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.5)) +
+  #     labs(title = "Borough vs. Violation" )
+  #   
+  #   ggplotly(p) %>% layout(height = 700, width = 1000)
+  #   #geom_line(aes(Month, weatherInput()*.8*min(crime_typeInput()/weatherInput()), group=1, colour="Weather")) + 
+  #   #scale_colour_manual("", values=c("Number of Total Crimes"="grey", "Weather"="black")) +  
+  #   #scale_fill_manual("",values="grey")+
+  #   #scale_y_continuous(sec.axis = sec_axis(~./.8/min(crime_typeInput()/weatherInput()))) +
+  #   # +
+  #   #theme(legend.justification=c(1,1), legend.position=c(1,1), panel.grid.major =element_blank(), 
+  #   #panel.grid.minor = element_blank(), panel.background = element_blank())
+  # })
+  
+  
 })
+
 
