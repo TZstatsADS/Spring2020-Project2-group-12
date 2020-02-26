@@ -6,29 +6,24 @@
 
 In this second project of GR5243 Applied Data Science, we develop a version 2.0 of an *Exploratory Data Analysis and Visualization* shiny app on a topic of your choice using [NYC Open Data](https://opendata.cityofnewyork.us/) or U.S. government open data released on the [data.gov](https://data.gov/) website. See [Project 2 Description](doc/project2_desc.md) for more details.  
 
-The **learning goals** for this project is:
-
-- business intelligence for data science
-- study legacy codes and further development
-- data cleaning
-- data visualization
-- systems development/design life cycle
-- shiny app/shiny server
-
-*The above general statement about project 2 can be removed once you are finished with your project. It is optional.
-
-## Project Title: Lorem ipsum dolor sit amet
+## Project Title: NYC Restaurant Health Inspection 
 Term: Spring 2020
 
-+ Team #
-+ **Projec title**: + Team members
++ Team 12
++ **NYC Restaurant Health Inspection **: 
 	+ Qing Gao(qg2175)
 	+ Xinwen Miao(xm2242)
 	+ Wenjie Xie(wx2223)
 	+ Ziyang Zhang(zz2683)
 	+ Siqi Zhao(sz2866)
 
-+ **Project summary**: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++ **Project summary**: Eating in New York can be very enjoyable, but there are also potential health risks. With the huge number of restaurants in New York, supervising the restaurants became a tough task. 
+Our shiny app is about the inspection results of restaurants in the five boroughs. The data comes from the Health Department.
+
+Our target consumers are mainly the restaurant supervisors, who’s job duties are maintaining the overall quality control and ensure customer satisfaction. Using our app, they can explore different types of violations, where are they concentrated and what cuisines are highly potential to have certain violations, etc. According to this they can choose where they  are interested to work and help getting better.
+
+Individuals like residents or travelers are also welcomed to use the app. They can get some references when choosing the next place to eat and enjoy.  
+
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
